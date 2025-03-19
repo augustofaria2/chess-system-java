@@ -1,6 +1,6 @@
 package boardgame;
 
-public class Position {
+public class Position { //posição das peças em linha x coluna
 	private int row;
 	private int column;
 	
@@ -27,7 +27,7 @@ public class Position {
 
 	@Override
 	public String toString() {
-		return "position [row=" + row + ", column=" + column + "]";
+		return "position [row=" + row + ", column=" + column + "]"; //imprimir a posição
 	}
 	
 }
