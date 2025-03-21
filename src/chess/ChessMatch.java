@@ -22,7 +22,7 @@ public class ChessMatch {// coração do sistema, regras.
 		}
 		return mat;
 	}
-
+	
 	/*
 	 * para instanciar (colocar) as peças de xadrez informando as coordenadas no
 	 * sistema de xadrez (coluna x linha) ao invés do sistema de matriz que fica
