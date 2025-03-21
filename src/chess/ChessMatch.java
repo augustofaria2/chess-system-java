@@ -23,10 +23,17 @@ public class ChessMatch {//coração do sistema, regras.
 		return mat;
 	}
 	
-	private void inicialSetup() {
-		board.placePiece(new Rook(board, Color.WHITE), new Position(2,1)); /*Camada de board e não de chess,
-		ou seja, funciona como matriz normal*/
-		board.placePiece(new King(board, Color.BLACK), new Position(0, 4));
-		board.placePiece(new King(board, Color.WHITE), new Position(7, 4));
+	/*
+	 * para instanciar (colocar) as peças de xadrez informando as coordenadas no sistema de xadrez 
+	 * (coluna x linha) ao invés do sistema de matriz que fica "confuso"
+	 */
+	private void placeNewPiece(char column, int row, ChessPiece piece) {
+		board.placePiece(piece, new ChessPosition(column, row).toPosition());
+	}
+	
+	private void inicialSetup() { //agora usamos as coordenadas de xadrez e não mais a de matriz
+		placeNewPiece('b', 6, new Rook(board, Color.WHITE)); 
+		placeNewPiece('e', 8, new King(board, Color.BLACK));
+		placeNewPiece('e', 1, new King(board, Color.WHITE));
 	}
 }
