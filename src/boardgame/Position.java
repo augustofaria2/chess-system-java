@@ -27,7 +27,7 @@ public class Position { //posição das peças em linha x coluna
 
 	@Override
 	public String toString() {
-		return "position [row=" + row + ", column=" + column + "]"; //imprimir a posição
+		return row + ", " + column; //imprimir a posição
 	}
 	
 }

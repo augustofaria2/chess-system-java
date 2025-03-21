@@ -6,6 +6,9 @@ public class Board {
 	private Piece[][] pieces;
 	
 	public Board(int rows, int columns) {
+		if(rows < 1 || columns < 1) {
+			throw new BoardException("Erro criando tabuleiro: é necessário ter ao menos 1 linha e 1 coluna");
+		}
 		this.rows = rows;
 		this.columns = columns;
 		pieces = new Piece[rows][columns];
@@ -15,23 +18,45 @@ public class Board {
 		return rows;
 	}
 
-	public void setRows(int rows) {
-		this.rows = rows;
-	}
-
 	public int getColumns() {
 		return columns;
 	}
-
-	public void setColumns(int columns) {
-		this.columns = columns;
+	
+	public Piece piece(int row, int column) { //retorna a peça que esta na linha x coluna especificada
+		if(!positionExists(row, column)) {
+			throw new BoardException("Posição não está no tabuleiro");
+		}
+		return pieces[row][column];
 	}
 	
-	public Piece piece(int row, int colunm) {
-		return pieces[row][colunm];
-	}
-	
-	public Piece piece(Position position) {
+	public Piece piece(Position position) { //retorna a peça que esta na posição[row][column]
+		if(!positionExists(position)) {
+			throw new BoardException("Posição não está no tabuleiro");
+		}
 		return pieces[position.getRow()][position.getColumn()];
+	}
+	
+	public void placePiece(Piece piece, Position position) { //coloca a peça naquela posição
+		if(thereIsAPiece(position)) {
+			throw new BoardException("Já existe uma peça na posição " + position);
+		}
+		pieces[position.getRow()][position.getColumn()] = piece;
+		piece.position = position;
+	}
+	
+	private boolean positionExists(int row, int column) { //verifica se a posição existe por linha x coluna
+		return row >= 0 && row < rows && column >= 0 && column < columns;
+	}
+	
+	//sobrecarga de método
+	public boolean positionExists(Position position) { //verifica se a posição existe dado uma posição
+		return positionExists(position.getRow(), position.getColumn()); //reaproveita o método de cima
+	}
+	
+	public boolean thereIsAPiece(Position position) {
+		if(!positionExists(position)) {
+			throw new BoardException("Posição não está no tabuleiro");
+		}
+		return piece(position) != null; //se for dif de nulo, quer dizer q tem uma peça nessa posição
 	}
 }
