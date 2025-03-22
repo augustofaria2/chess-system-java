@@ -43,7 +43,7 @@ public class ChessMatch {// coração do sistema, regras.
 		Piece p = board.removePiece(source); //retiro a peça da posição de origem
 		Piece capturedPiece = board.removePiece(target); //removo a possível peça da posição de destino e por padrão ela é a peça capturada
 		board.placePiece(p, target); //movo a peça retirada na origem pra posição de destino
-		return capturedPiece;
+		return capturedPiece; //retorno a peça capturada
 	}
 	
 	private void validateSourcePosition(Position position) {

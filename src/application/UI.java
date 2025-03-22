@@ -34,7 +34,7 @@ public class UI {
 		try {
 			String s = sc.nextLine();
 			char column = s.charAt(0); //pega o primeiro caractere da string a1, b1, c1 (a, b, c)
-			int row = Integer.parseInt(s.substring(1)); //recorta o segundo caractere da string e transforma 
+			int row = Integer.parseInt(s.substring(1)); //recorta o segundo caractere da string a1 b1 c1 (1, 1, 1) e transforma 
 			return new ChessPosition(column, row);		//em int, pra isso serve o "parse"
 		}catch(RuntimeException e) {
 			throw new InputMismatchException("Erro instanciando posições do xadrez, valores válidos a1 até h8");

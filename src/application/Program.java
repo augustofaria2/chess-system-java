@@ -17,11 +17,11 @@ public class Program {
 			UI.printBoard(chessMatch.getPieces()); //coloca as peças no tabuleiro
 			System.out.println();
 			System.out.println("Origem: ");
-			ChessPosition source = UI.readChessPosition(sc);
+			ChessPosition source = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de origem
 			
 			System.out.println();
 			System.out.println("Destino: ");
-			ChessPosition target = UI.readChessPosition(sc);
+			ChessPosition target = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de destino
 			
 			ChessPiece capturedPiece = chessMatch.performChessMove(source, target);
 		}

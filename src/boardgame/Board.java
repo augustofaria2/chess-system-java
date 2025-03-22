@@ -54,7 +54,7 @@ public class Board {
 		Piece aux = piece(position); 
 		aux.position = null; //posição da peça aux é nula, ou seja, foi retirada do tabuleiro
 		pieces[position.getRow()][position.getColumn()] = null; /*na matriz de peças, na posição 
-		onde estou removendo, agora é nulo, indicando q não tem mais peça nessa posição da matriz.*/
+		onde estou removendo, agora é nulo, indicando que não tem mais peça nessa posição da matriz.*/
 		return aux;
 	}
 	
