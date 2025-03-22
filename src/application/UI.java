@@ -1,11 +1,15 @@
 package application;
 
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
 import chess.ChessPiece;
+import chess.ChessPosition;
 import chess.Color;
 
 public class UI {
-	
-	//https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+
+	// https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
 
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
@@ -26,6 +30,17 @@ public class UI {
 	public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
 	public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
+	public static ChessPosition readChessPosition(Scanner sc) { //recebe o scanner da main e faz a leitura com ele
+		try {
+			String s = sc.nextLine();
+			char column = s.charAt(0); //pega o primeiro caractere da string a1, b1, c1 (a, b, c)
+			int row = Integer.parseInt(s.substring(1)); //recorta o segundo caractere da string e transforma 
+			return new ChessPosition(column, row);		//em int, pra isso serve o "parse"
+		}catch(RuntimeException e) {
+			throw new InputMismatchException("Erro instanciando posições do xadrez, valores válidos a1 até h8");
+		}
+	}
+
 	public static void printBoard(ChessPiece[][] pieces) { // imprime o tabuleiro na tela
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.print((8 - i) + " ");
@@ -42,11 +57,10 @@ public class UI {
 			System.out.print("-");
 		} else {
 			if (piece.getColor() == Color.WHITE) {
-                System.out.print(ANSI_WHITE + piece + ANSI_RESET);
-            }
-            else {
-                System.out.print(ANSI_YELLOW + piece + ANSI_RESET);
-            }
+				System.out.print(ANSI_WHITE + piece + ANSI_RESET);
+			} else {
+				System.out.print(ANSI_YELLOW + piece + ANSI_RESET);
+			}
 		}
 		System.out.print(" ");
 	}
