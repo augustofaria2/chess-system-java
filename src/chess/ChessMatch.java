@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
@@ -10,11 +13,16 @@ public class ChessMatch {// coração do sistema, regras.
 	private Board board;
 	private int turn;
 	private Color currentPlayer;
+	
+	private List <Piece> piecesOnTheBoard; //aceita todo tipo de peça
+	private List <Piece> capturedPieces;
 
 	public ChessMatch() {
 		board = new Board(8, 8); // dimensões do tabuleiro de xadrez
 		turn = 1;
 		currentPlayer = Color.WHITE;
+		piecesOnTheBoard = new ArrayList<>();
+		capturedPieces = new ArrayList<>();
 		inicialSetup(); // coloca as peças
 	}
 	
@@ -62,6 +70,10 @@ public class ChessMatch {// coração do sistema, regras.
 		Piece p = board.removePiece(source); //retiro a peça da posição de origem
 		Piece capturedPiece = board.removePiece(target); //removo a possível peça da posição de destino e por padrão ela é a peça capturada
 		board.placePiece(p, target); //movo a peça retirada na origem pra posição de destino
+		if(capturedPiece != null) {
+			piecesOnTheBoard.remove(capturedPiece); //retira da lista de peças no tabuleiro
+			capturedPieces.add(capturedPiece); //acrescenta na lista de peças capturadas
+		}
 		return capturedPiece; //retorno a peça capturada
 	}
 	
@@ -90,6 +102,7 @@ public class ChessMatch {// coração do sistema, regras.
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
+		piecesOnTheBoard.add(piece);
 	}
 
 	private void inicialSetup() { // agora usamos as coordenadas de xadrez e não mais a de matriz
