@@ -8,12 +8,24 @@ import chess.pieces.Rook;
 
 public class ChessMatch {// coração do sistema, regras.
 	private Board board;
+	private int turn;
+	private Color currentPlayer;
 
 	public ChessMatch() {
 		board = new Board(8, 8); // dimensões do tabuleiro de xadrez
+		turn = 1;
+		currentPlayer = Color.WHITE;
 		inicialSetup(); // coloca as peças
 	}
-
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
+	}
+	
 	public ChessPiece[][] getPieces() { // retorna uma matriz de peças de xadrez para essa partida
 		ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
 		for (int i = 0; i < board.getRows(); i++) {
@@ -39,10 +51,10 @@ public class ChessMatch {// coração do sistema, regras.
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		Position source = sourcePosition.toPosition();
 		Position target = targetPosition.toPosition();
-		
 		validateSourcePosition(source);
 		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target); //operação por realizar o movimento da peça (formato de matriz os parametros)
+		nextTurn();
 		return (ChessPiece) capturedPiece; //downcasting pra ChessPiece porque a peça capturada era de tipo Piece;
 	}
 	
@@ -57,6 +69,9 @@ public class ChessMatch {// coração do sistema, regras.
 		if(!board.thereIsAPiece(position)) {
 			throw new ChessException("Não existe peça no posição de origem");
 		}
+		if(currentPlayer != ((ChessPiece) board.piece(position)).getColor()) { //faço downcast para ChessPiece e depois testo a cor
+			throw new ChessException("A peça escolhida não é sua");
+		}
 		if(!board.piece(position).isThereAnyPossibleMove()) { //acessa o tabuleiro, acessa a peça na posição de origem e chama o teste de movimento possivel
 			throw new ChessException("Não existe movimentos possíveis para a peça escolhida");
 		}
@@ -66,6 +81,11 @@ public class ChessMatch {// coração do sistema, regras.
 		if(!board.piece(source).possibleMove(target)) { //usa o possibleMove para verificar se ela pode se mover da posição source -> target
 			throw new ChessException("A peça escolhida não pode se mover para a posição de destino");
 		}
+	}
+	
+	private void nextTurn() {
+		turn++;
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK: Color.WHITE; //expressão condicional ternária
 	}
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {

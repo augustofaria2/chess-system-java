@@ -18,7 +18,7 @@ public class Program {
 		while(true) { //trata as exceções e permite digitar novamente após o nextLine
 			try {
 				UI.clearScreen();
-				UI.printBoard(chessMatch.getPieces()); //coloca as peças no tabuleiro
+				UI.printMatch(chessMatch); //coloca as peças no tabuleiro
 				System.out.println();
 				System.out.println("Origem: ");
 				ChessPosition source = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de origem
