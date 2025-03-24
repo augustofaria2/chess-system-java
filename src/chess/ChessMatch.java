@@ -24,6 +24,12 @@ public class ChessMatch {// coração do sistema, regras.
 		return mat;
 	}
 	
+	public boolean[][] possibleMoves(ChessPosition sourcePosition){ //para imprimir as posições possíveis a partir de uma de origem
+		Position position = sourcePosition.toPosition(); //converte a posição de xadrez, para uma posição de matriz normal
+		validateSourcePosition(position); //valida assim q o usuário entra com ela
+		return board.piece(position).possibleMoves();
+	}
+	
 	/*
 	 * para instanciar (colocar) as peças de xadrez informando as coordenadas no
 	 * sistema de xadrez (coluna x linha) ao invés do sistema de matriz que fica

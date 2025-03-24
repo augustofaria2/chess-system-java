@@ -23,6 +23,11 @@ public class Program {
 				System.out.println("Origem: ");
 				ChessPosition source = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de origem
 				
+				boolean[][] possibleMoves = (chessMatch.possibleMoves(source));
+				UI.clearScreen();
+				UI.printBoard(chessMatch.getPieces(), possibleMoves); /*sobrecarga do printBoard, q imprime o tabuleiro e também 
+				todas as posições possíveis de movimento da peça (coloridos)*/
+				
 				System.out.println();
 				System.out.println("Destino: ");
 				ChessPosition target = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de destino
