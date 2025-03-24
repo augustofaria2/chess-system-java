@@ -21,7 +21,7 @@ public class Rook extends ChessPiece { //torre
 		boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
 		Position p = new Position(0,0);
 		
-		//acima (linha na mesma coluna só que pra cima
+		//acima (linha acima mas na mesma coluna).
 		p.setValues(position.getRow() - 1, position.getColumn()); //position para acessar a posição da própria peça
 		while(getBoard().positionExists(p) && !getBoard().thereIsAPiece(p)) {//verifica se a posição existe e se não tem peça lá já
 			mat[p.getRow()][p.getColumn()] = true; //altera pra verdadeiro a posição acima da nossa na matriz, indicando q a peça pode ser movida pra lá
