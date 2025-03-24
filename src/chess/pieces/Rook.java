@@ -14,4 +14,10 @@ public class Rook extends ChessPiece { //torre
 	public String toString() {
 		return "T";
 	}
+
+	@Override
+	public boolean[][] possibleMoves() {
+		boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
+		return mat; //como se a torre estivesse presa, já q tudo é falso, não há movimentos possíveis
+	}
 }
