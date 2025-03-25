@@ -18,7 +18,7 @@ public class Program {
 		ChessMatch chessMatch = new ChessMatch(); //gera o tabuleiro
 		List <ChessPiece> captured = new ArrayList<>();
 		
-		while(true) { //trata as exceções e permite digitar novamente após o nextLine
+		while(!chessMatch.getCheckMate()) { //trata as exceções e permite digitar novamente após o nextLine
 			try {
 				UI.clearScreen();
 				UI.printMatch(chessMatch, captured); //coloca as peças no tabuleiro
@@ -48,5 +48,7 @@ public class Program {
 				sc.nextLine();
 			}
 		}
+		UI.clearScreen();
+		UI.printMatch(chessMatch, captured);
 	}
 }

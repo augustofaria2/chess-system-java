@@ -15,6 +15,7 @@ public class ChessMatch {// coração do sistema, regras.
 	private int turn;
 	private Color currentPlayer;
 	private boolean check; //por padrão inicia como falso
+	private boolean checkMate;
 	
 	private List <Piece> piecesOnTheBoard; //aceita todo tipo de peça
 	private List <Piece> capturedPieces;
@@ -34,6 +35,10 @@ public class ChessMatch {// coração do sistema, regras.
 	
 	public boolean getCheck() {
 		return check;
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public Color getCurrentPlayer() {
@@ -76,7 +81,12 @@ public class ChessMatch {// coração do sistema, regras.
 		
 		check = (testCheck(opponent(currentPlayer))) ? true : false; //verifica se o oponente n ficou em xeque com a jogada
 		
-		nextTurn();
+		if(testCheckMate(opponent(currentPlayer))) { //testa se a jogada foi xeque-mate
+			checkMate = true;
+		}else {
+			nextTurn();
+		}
+		
 		return (ChessPiece) capturedPiece; //downcasting pra ChessPiece porque a peça capturada era de tipo Piece;
 	}
 	
@@ -151,6 +161,32 @@ public class ChessMatch {// coração do sistema, regras.
 			}
 		}
 		return false;
+	}
+	
+	private boolean testCheckMate(Color color) {
+		if(!testCheck(color)) { //possibilidade dele n estar em xeque, se n esta em xeque, n esta em xeque-mate
+			return false;
+		}
+		List <Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
+		for(Piece p : list) {
+			boolean[][] mat = p.possibleMoves(); 
+			for(int i = 0; i < board.getRows(); i++) {
+				for(int j = 0; j < board.getColumns(); j++) {
+					if(mat[i][j]) { //testa se a posição tira do xeque
+						Position source = ((ChessPiece)p).getChessPosition().toPosition(); /*pega a posição de origem com downcast para
+						ChessPiece pq ChessMatch n pode usar o atributo protected position e converte em matriz com toPosition*/
+						Position target = new Position (i, j); //posição i,j de destino (movimento possivel)
+						Piece capturedPiece = makeMove(source, target); //faço a peça p (q agora é capturedPiece) mover da origem pro destino
+						boolean testCheck = testCheck(color); //testo se ainda está em xeque
+						undoMove(source, target, capturedPiece); //desfaço o movimento, pq ele foi feito somente pra testar
+						if(!testCheck) { //quer dizer q tirou do xeque, portanto, retorna falso
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
