@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -13,6 +14,7 @@ public class ChessMatch {// coração do sistema, regras.
 	private Board board;
 	private int turn;
 	private Color currentPlayer;
+	private boolean check; //por padrão inicia como falso
 	
 	private List <Piece> piecesOnTheBoard; //aceita todo tipo de peça
 	private List <Piece> capturedPieces;
@@ -28,6 +30,10 @@ public class ChessMatch {// coração do sistema, regras.
 	
 	public int getTurn() {
 		return turn;
+	}
+	
+	public boolean getCheck() {
+		return check;
 	}
 	
 	public Color getCurrentPlayer() {
@@ -62,6 +68,14 @@ public class ChessMatch {// coração do sistema, regras.
 		validateSourcePosition(source);
 		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target); //operação por realizar o movimento da peça (formato de matriz os parametros)
+		
+		if(testCheck(currentPlayer)) { //verifica se o jogador atual se colocou em xeque
+			undoMove(source, target, capturedPiece);
+			throw new ChessException("Você não pode se colocar em xeque");
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true : false; //verifica se o oponente n ficou em xeque com a jogada
+		
 		nextTurn();
 		return (ChessPiece) capturedPiece; //downcasting pra ChessPiece porque a peça capturada era de tipo Piece;
 	}
@@ -75,6 +89,17 @@ public class ChessMatch {// coração do sistema, regras.
 			capturedPieces.add(capturedPiece); //acrescenta na lista de peças capturadas
 		}
 		return capturedPiece; //retorno a peça capturada
+	}
+	
+	private void undoMove(Position source, Position target, Piece capturedPiece) {
+		Piece p = board.removePiece(target); //retiro a peça que movi ao destino
+		board.placePiece(p, source);
+		
+		if(capturedPiece != null) { //retorno a peça capturada pra posição q ela estava
+			board.placePiece(capturedPiece, target);
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
 	}
 	
 	private void validateSourcePosition(Position position) {
@@ -98,6 +123,34 @@ public class ChessMatch {// coração do sistema, regras.
 	private void nextTurn() {
 		turn++;
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK: Color.WHITE; //expressão condicional ternária
+	}
+	
+	private Color opponent(Color color) { 
+		return (color == Color.WHITE ? Color.BLACK : Color.WHITE);
+	}
+	
+	private ChessPiece findKing(Color color) { //filtro usando lista
+		List <Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		//downcast pq Piece n tem cor, só ChessPiece
+		for(Piece p : list) {
+			if(p instanceof King) {
+				return (ChessPiece) p; //downcast dnv
+			}
+		}
+		throw new IllegalStateException("Não existe um rei da cor " + color + " no tabuleiro"); /*nem trato no programa principal, pq nem deveria
+		acontecer. Se acontecer, o tabuleiro está com algum problema.*/
+	}
+	
+	private boolean testCheck(Color color) {
+		Position kingPosition = findKing(color).getChessPosition().toPosition(); //pego a posição no formato de matriz
+		List <Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
+		for(Piece p : opponentPieces) {
+			boolean[][] mat = p.possibleMoves(); //matriz de movimentos possiveis da peça adversária p
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) { //se o elemento da matriz for verdadeiro, o rei esta em xeque
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {

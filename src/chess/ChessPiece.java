@@ -16,6 +16,10 @@ public abstract class ChessPiece extends Piece{
 		return color;
 	}
 	
+	public ChessPosition getChessPosition() {
+		return ChessPosition.fromPosition(position); //converte a posição de matriz para posição de xadrez
+	}
+	
 	/*Está na classe genérica ChessPiece porque será reaproveitada em todas as outras peças, ela é protected porque deve ser acessada
 	 *somente pelo mesmo pacote e pelas subclasses peças. 
 	 */

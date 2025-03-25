@@ -22,18 +22,16 @@ public class Program {
 			try {
 				UI.clearScreen();
 				UI.printMatch(chessMatch, captured); //coloca as peças no tabuleiro
-				
 				System.out.println();
-				System.out.println("Origem: ");
+				System.out.print("Origem: ");
 				ChessPosition source = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de origem
 				
-				boolean[][] possibleMoves = (chessMatch.possibleMoves(source));
+				boolean[][] possibleMoves = chessMatch.possibleMoves(source);
 				UI.clearScreen();
 				UI.printBoard(chessMatch.getPieces(), possibleMoves); /*sobrecarga do printBoard, q imprime o tabuleiro e também 
 				todas as posições possíveis de movimento da peça (coloridos)*/
-				
 				System.out.println();
-				System.out.println("Destino: ");
+				System.out.print("Destino: ");
 				ChessPosition target = UI.readChessPosition(sc); //passa o scanner pro método, contendo a posição de destino
 				
 				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);

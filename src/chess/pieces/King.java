@@ -29,49 +29,49 @@ public class King extends ChessPiece{ //rei
 		
 		//acima
 		p.setValues(position.getRow() - 1, position.getColumn()); //mesma coluna só que uma linha pra cima
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//esquerda
 		p.setValues(position.getRow(), position.getColumn() - 1); //mesma linha só que uma coluna pra esquerda
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//direita
 		p.setValues(position.getRow(), position.getColumn() + 1); //mesma linha só que uma coluna pra direita
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//abaixo
 		p.setValues(position.getRow() + 1, position.getColumn()); //mesma coluna só que uma linha pra baixo
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//diagonal noroeste (norte, oeste)
 		p.setValues(position.getRow() - 1, position.getColumn() - 1); //uma coluna pra esquerda e uma linha pra cima
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//diagonal nordeste (note, leste)
 		p.setValues(position.getRow() - 1, position.getColumn() + 1); //uma coluna pra direita e uma linha pra cima
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//diagonal sudoeste (sul, oeste)
 		p.setValues(position.getRow() + 1, position.getColumn() - 1); //uma coluna pra esquerda e uma linha pra baixo
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
 		//diagonal sudeste (sul, leste)
 		p.setValues(position.getRow() + 1, position.getColumn() + 1); //uma coluna pra direita e uma linha pra baixo
-		while(getBoard().positionExists(p) && canMove(p)) {
+		if(getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
 		
