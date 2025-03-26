@@ -15,10 +15,10 @@ public class Knight extends ChessPiece{ //cavalo
 	public String toString() {
 		return "C";
 	}
-
-	private boolean canMove(Position position) { //método para dizer se o rei pode mover pra x posição
+	
+	private boolean canMove(Position position) { 
 		ChessPiece p = (ChessPiece) getBoard().piece(position);
-		return p == null || p.getColor() != getColor(); //posição vazia ou com peça diferente da cor do rei
+		return p == null || p.getColor() != getColor(); 
 	}
 	
 	@Override
