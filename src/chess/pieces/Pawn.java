@@ -66,7 +66,7 @@ public class Pawn extends ChessPiece { //peão
 			}
 		}
 		
-		return mat;
+		return mat; //como se o peão estivesse preso, já q tudo é falso e n há movimentos possiveis
 	}
 	
 	@Override
