@@ -91,7 +91,8 @@ public class ChessMatch {// coração do sistema, regras.
 	}
 	
 	private Piece makeMove(Position source, Position target) {
-		Piece p = board.removePiece(source); //retiro a peça da posição de origem
+		ChessPiece p = (ChessPiece)board.removePiece(source); //retiro a peça da posição de origem
+		p.increaseMoveCount(); //fiz downcast pra facilitar, n altera em nd o código pq acontece o upcast de p no placePiece
 		Piece capturedPiece = board.removePiece(target); //removo a possível peça da posição de destino e por padrão ela é a peça capturada
 		board.placePiece(p, target); //movo a peça retirada na origem pra posição de destino
 		if(capturedPiece != null) {
@@ -102,7 +103,8 @@ public class ChessMatch {// coração do sistema, regras.
 	}
 	
 	private void undoMove(Position source, Position target, Piece capturedPiece) {
-		Piece p = board.removePiece(target); //retiro a peça que movi ao destino
+		ChessPiece p = (ChessPiece)board.removePiece(target); //retiro a peça que movi ao destino
+		p.decreaseMoveCount();
 		board.placePiece(p, source);
 		
 		if(capturedPiece != null) { //retorno a peça capturada pra posição q ela estava
