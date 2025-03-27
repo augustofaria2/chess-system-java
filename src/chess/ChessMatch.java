@@ -99,10 +99,28 @@ public class ChessMatch {// coração do sistema, regras.
 		p.increaseMoveCount(); //fiz downcast pra facilitar, n altera em nd o código pq acontece o upcast de p no placePiece
 		Piece capturedPiece = board.removePiece(target); //removo a possível peça da posição de destino e por padrão ela é a peça capturada
 		board.placePiece(p, target); //movo a peça retirada na origem pra posição de destino
+		
 		if(capturedPiece != null) {
 			piecesOnTheBoard.remove(capturedPiece); //retira da lista de peças no tabuleiro
 			capturedPieces.add(capturedPiece); //acrescenta na lista de peças capturadas
 		}
+		//roque pequeno
+		if(p instanceof King && target.getColumn() == source.getColumn() + 2) { //mover a torre no roque
+			Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
+			Position targetT = new Position(source.getRow(), source.getColumn() + 1);
+			ChessPiece rook = (ChessPiece) board.removePiece(sourceT); //removo ela daquela posição
+			board.placePiece(rook, targetT); //coloco ela na posição após o roque
+			rook.increaseMoveCount(); //incremento o número de movimentos da torre
+		}
+		//roque grande
+		if(p instanceof King && target.getColumn() == source.getColumn() - 2) { 
+			Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
+			Position targetT = new Position(source.getRow(), source.getColumn() - 1);
+			ChessPiece rook = (ChessPiece) board.removePiece(sourceT); 
+			board.placePiece(rook, targetT); 
+			rook.increaseMoveCount(); 
+		}
+		
 		return capturedPiece; //retorno a peça capturada
 	}
 	
@@ -115,6 +133,23 @@ public class ChessMatch {// coração do sistema, regras.
 			board.placePiece(capturedPiece, target);
 			capturedPieces.remove(capturedPiece);
 			piecesOnTheBoard.add(capturedPiece);
+		}
+		
+		//roque pequeno
+		if(p instanceof King && target.getColumn() == source.getColumn() + 2) { 
+			Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
+			Position targetT = new Position(source.getRow(), source.getColumn() + 1);
+			ChessPiece rook = (ChessPiece) board.removePiece(targetT); 
+			board.placePiece(rook, sourceT); 
+			rook.decreaseMoveCount(); 
+		}
+		//roque grande
+		if(p instanceof King && target.getColumn() == source.getColumn() - 2) { 
+			Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
+			Position targetT = new Position(source.getRow(), source.getColumn() - 1);
+			ChessPiece rook = (ChessPiece) board.removePiece(targetT); 
+			board.placePiece(rook, sourceT); 
+			rook.decreaseMoveCount(); 
 		}
 	}
 	
@@ -205,7 +240,7 @@ public class ChessMatch {// coração do sistema, regras.
 		placeNewPiece('b', 1, new Knight(board, Color.WHITE));
 		placeNewPiece('c', 1, new Bishop(board, Color.WHITE));
 		placeNewPiece('d', 1, new Queen(board, Color.WHITE));
-		placeNewPiece('e', 1, new King(board, Color.WHITE));
+		placeNewPiece('e', 1, new King(board, Color.WHITE, this)); //autoreferência a própria partida que estou
 		placeNewPiece('f', 1, new Bishop(board, Color.WHITE));
 		placeNewPiece('g', 1, new Knight(board, Color.WHITE));
 		placeNewPiece('h', 1, new Rook(board, Color.WHITE));
@@ -222,7 +257,7 @@ public class ChessMatch {// coração do sistema, regras.
 		placeNewPiece('b', 8, new Knight(board, Color.BLACK));
 		placeNewPiece('c', 8, new Bishop(board, Color.BLACK));
 		placeNewPiece('d', 8, new Queen(board, Color.BLACK));
-		placeNewPiece('e', 8, new King(board, Color.BLACK));
+		placeNewPiece('e', 8, new King(board, Color.BLACK, this));
 		placeNewPiece('f', 8, new Bishop(board, Color.BLACK));
 		placeNewPiece('g', 8, new Knight(board, Color.BLACK));
 		placeNewPiece('h', 8, new Rook(board, Color.BLACK));
