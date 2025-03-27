@@ -21,21 +21,24 @@ public class ChessMatch {// coração do sistema, regras.
 	private boolean check; //por padrão inicia como falso
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted;
 	
-	private List <Piece> piecesOnTheBoard; //aceita todo tipo de peça
-	private List <Piece> capturedPieces;
+	private List<Piece> piecesOnTheBoard = new ArrayList<>(); //aceita todo tipo de peça
+	private List<Piece> capturedPieces = new ArrayList<>();
 
-	public ChessMatch() {
-		board = new Board(8, 8); // dimensões do tabuleiro de xadrez
+	public ChessMatch() { 
+		board = new Board(8, 8);  // dimensões do tabuleiro de xadrez
 		turn = 1;
 		currentPlayer = Color.WHITE;
-		piecesOnTheBoard = new ArrayList<>();
-		capturedPieces = new ArrayList<>();
 		inicialSetup(); // coloca as peças
 	}
 	
 	public int getTurn() {
 		return turn;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 	
 	public boolean getCheck() {
@@ -46,27 +49,27 @@ public class ChessMatch {// coração do sistema, regras.
 		return checkMate;
 	}
 	
-	public Color getCurrentPlayer() {
-		return currentPlayer;
-	}
-	
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
 	}
 	
+	public ChessPiece getPromoted() {
+		return promoted;
+	}
+	
 	public ChessPiece[][] getPieces() { // retorna uma matriz de peças de xadrez para essa partida
 		ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
-		for (int i = 0; i < board.getRows(); i++) {
-			for (int j = 0; j < board.getColumns(); j++) {
+		for (int i=0; i<board.getRows(); i++) {
+			for (int j=0; j<board.getColumns(); j++) {
 				mat[i][j] = (ChessPiece) board.piece(i, j); // interpreta como ChessPiece e n Piece. (downcasting)
 			}
 		}
 		return mat;
 	}
 	
-	public boolean[][] possibleMoves(ChessPosition sourcePosition){ //para imprimir as posições possíveis a partir de uma de origem
+	public boolean[][] possibleMoves(ChessPosition sourcePosition) { //para imprimir as posições possíveis a partir de uma de origem
 		Position position = sourcePosition.toPosition(); //converte a posição de xadrez, para uma posição de matriz normal
-		validateSourcePosition(position); //valida assim q o usuário entra com ela
+		validateSourcePosition(position);//valida assim q o usuário entra com ela
 		return board.piece(position).possibleMoves();
 	}
 	
@@ -83,20 +86,31 @@ public class ChessMatch {// coração do sistema, regras.
 		validateTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target); //operação por realizar o movimento da peça (formato de matriz os parametros)
 		
-		if(testCheck(currentPlayer)) { //verifica se o jogador atual se colocou em xeque
+		if (testCheck(currentPlayer)) { //verifica se o jogador atual se colocou em xeque
 			undoMove(source, target, capturedPiece);
 			throw new ChessException("Você não pode se colocar em xeque");
 		}
 		
 		ChessPiece movedPiece = (ChessPiece) board.piece(target); //peça movida é referênciada
 		
-		check = (testCheck(opponent(currentPlayer))) ? true : false; //verifica se o oponente n ficou em xeque com a jogada
+		//promoção do peão
+		promoted = null;//garantir q é sempre uma nova peça
+		if (movedPiece instanceof Pawn) { 
+			if ((movedPiece.getColor() == Color.WHITE && target.getRow() == 0) || (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)) {
+				promoted = (ChessPiece)board.piece(target); //jogo o peão como promoted
+				promoted = replacePromotedPiece("Q");
+			}
+		}
 		
-		if(testCheckMate(opponent(currentPlayer))) { //testa se a jogada foi xeque-mate
+		check = (testCheck(opponent(currentPlayer))) ? true : false; //verifica se o oponente n ficou em xeque com a jogada
+
+		if (testCheckMate(opponent(currentPlayer))) { //testa se a jogada foi xeque-mate
 			checkMate = true;
-		}else {
+		}
+		else {
 			nextTurn();
 		}
+		
 		//en passant
 		if(movedPiece instanceof Pawn && (target.getRow() == source.getRow() + 2 || target.getRow() == source.getRow() - 2)){ //duas pra cima ou pra baixo
 			enPassantVulnerable = movedPiece;
@@ -105,6 +119,36 @@ public class ChessMatch {// coração do sistema, regras.
 		}
 		
 		return (ChessPiece) capturedPiece; //downcasting pra ChessPiece porque a peça capturada era de tipo Piece;
+	}
+	
+	public ChessPiece replacePromotedPiece(String type) {
+		if(promoted == null) {
+			throw new IllegalStateException("Não há peça para ser promovida");
+		}
+		if(!type.equals("B") && !type.equals("C") && !type.equals("T") && !type.equals("D")) {
+			return promoted;
+		}
+		Position pos = promoted.getChessPosition().toPosition(); ;//posição da peça promovida
+		Piece p = board.removePiece(pos); //removo a peça q estava naquela posição e guardei no p
+		piecesOnTheBoard.remove(p); //removi ela da lista de peças no tabuleiro
+		
+		ChessPiece newPiece = newPiece(type, promoted.getColor()); //instancio o método
+		board.placePiece(newPiece, pos); //coloco a nova peça na posição da antigo peão
+		piecesOnTheBoard.add(newPiece); //coloco a nova peça na lista de peças no tabuleiro
+		
+		return newPiece;
+	}
+	
+	private ChessPiece newPiece(String type, Color color) { //pra testar qual peça o usuário quer
+		if(type.equals("B")) {
+			return new Bishop(board, color);
+		}else if(type.equals("C")) {
+			return new Knight(board, color);
+		}else if(type.equals("Q")) {
+			return new Queen(board, color);
+		}else {
+			return new Rook(board, color); //falhou todos, é torre
+		}
 	}
 	
 	private Piece makeMove(Position source, Position target) {
@@ -222,13 +266,13 @@ public class ChessMatch {// coração do sistema, regras.
 	
 	private Color opponent(Color color) { 
 		return (color == Color.WHITE ? Color.BLACK : Color.WHITE);
-	}
+	}	
 	
-	private ChessPiece findKing(Color color) { //filtro usando lista
-		List <Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+	private ChessPiece king(Color color) {
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
 		//downcast pq Piece n tem cor, só ChessPiece
-		for(Piece p : list) {
-			if(p instanceof King) {
+		for (Piece p : list) {
+			if (p instanceof King) {
 				return (ChessPiece) p; //downcast dnv
 			}
 		}
@@ -237,34 +281,34 @@ public class ChessMatch {// coração do sistema, regras.
 	}
 	
 	private boolean testCheck(Color color) {
-		Position kingPosition = findKing(color).getChessPosition().toPosition(); //pego a posição no formato de matriz
-		List <Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
-		for(Piece p : opponentPieces) {
+		Position kingPosition = king(color).getChessPosition().toPosition();//pego a posição no formato de matriz
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
+		for (Piece p : opponentPieces) {
 			boolean[][] mat = p.possibleMoves(); //matriz de movimentos possiveis da peça adversária p
-			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) { //se o elemento da matriz for verdadeiro, o rei esta em xeque
-				return true;
+			if (mat[kingPosition.getRow()][kingPosition.getColumn()]) { 
+				return true; //se o elemento da matriz for verdadeiro, o rei esta em xeque
 			}
 		}
 		return false;
 	}
-	
-	private boolean testCheckMate(Color color) {
-		if(!testCheck(color)) { //possibilidade dele n estar em xeque, se n esta em xeque, n esta em xeque-mate
+		
+	private boolean testCheckMate(Color color) { 
+		if (!testCheck(color)) { //possibilidade dele n estar em xeque, se n esta em xeque, n esta em xeque-mate
 			return false;
 		}
-		List <Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
-		for(Piece p : list) {
-			boolean[][] mat = p.possibleMoves(); 
-			for(int i = 0; i < board.getRows(); i++) {
-				for(int j = 0; j < board.getColumns(); j++) {
-					if(mat[i][j]) { //testa se a posição tira do xeque
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		for (Piece p : list) {
+			boolean[][] mat = p.possibleMoves();
+			for (int i=0; i<board.getRows(); i++) {
+				for (int j=0; j<board.getColumns(); j++) {
+					if (mat[i][j]) { //testa se a posição tira do xeque
 						Position source = ((ChessPiece)p).getChessPosition().toPosition(); /*pega a posição de origem com downcast para
-						ChessPiece pq ChessMatch n pode usar o atributo protected position e converte em matriz com toPosition*/
-						Position target = new Position (i, j); //posição i,j de destino (movimento possivel)
+						ChessPiece pq ChessMatch n pode usar o atributo protected position e converte em matriz com toPosition */
+						Position target = new Position(i, j); //posição i,j de destino (movimento possivel)
 						Piece capturedPiece = makeMove(source, target); //faço a peça p (q agora é capturedPiece) mover da origem pro destino
 						boolean testCheck = testCheck(color); //testo se ainda está em xeque
 						undoMove(source, target, capturedPiece); //desfaço o movimento, pq ele foi feito somente pra testar
-						if(!testCheck) { //quer dizer q tirou do xeque, portanto, retorna falso
+						if (!testCheck) { //quer dizer q tirou do xeque, portanto, retorna falso
 							return false;
 						}
 					}
@@ -272,13 +316,13 @@ public class ChessMatch {// coração do sistema, regras.
 			}
 		}
 		return true;
-	}
+	}	
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
 		piecesOnTheBoard.add(piece);
 	}
-
+	
 	private void inicialSetup() { // agora usamos as coordenadas de xadrez e não mais a de matriz
 		placeNewPiece('a', 1, new Rook(board, Color.WHITE));
 		placeNewPiece('b', 1, new Knight(board, Color.WHITE));
@@ -313,6 +357,5 @@ public class ChessMatch {// coração do sistema, regras.
 		placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));
 		placeNewPiece('g', 7, new Pawn(board, Color.BLACK, this));
 		placeNewPiece('h', 7, new Pawn(board, Color.BLACK, this));
-		
 	}
 }
