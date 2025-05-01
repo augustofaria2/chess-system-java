@@ -144,7 +144,7 @@ public class ChessMatch {// coração do sistema, regras.
 			return new Bishop(board, color);
 		}else if(type.equals("C")) {
 			return new Knight(board, color);
-		}else if(type.equals("Q")) {
+		}else if(type.equals("D")) {
 			return new Queen(board, color);
 		}else {
 			return new Rook(board, color); //falhou todos, é torre
